@@ -32,11 +32,6 @@ env/
 *.swo
 *~
 
-# Output files
-output/*.json
-output/*.md
-output/*.html
-
 # Keep output directory structure
 !output/.gitkeep
 
