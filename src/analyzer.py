@@ -9,7 +9,6 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
-
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from config import STRUCTURED_NEWS_FILE
