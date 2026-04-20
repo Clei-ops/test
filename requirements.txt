@@ -1,0 +1,16 @@
+# AI舆情分析日报系统依赖
+
+# LLM API (使用 OpenAI 兼容接口调用阿里云百炼)
+openai>=1.0.0
+
+# 数据处理
+python-dateutil>=2.8.2
+
+# 可视化
+pyecharts>=2.0.0
+
+# Markdown渲染
+markdown>=3.5.0
+
+# 工具
+tqdm>=4.66.0

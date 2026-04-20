@@ -1,0 +1,122 @@
+[
+  {
+    "id": "news_001",
+    "title": "Anthropic走进白宫：Mythos项目获政府认可",
+    "content": "Anthropic CEO Dario Amodei与白宫幕僚长Susie Wiles及财政部长Scott Bessent会面。此前特朗普政府曾将Anthropic列为供应链风险，但联邦法官阻止了该指令。转变的关键在于Anthropic的Mythos AI网络安全能力——该模型能够自主识别和利用软件漏洞。在内部测试中，Mythos发现了各大主要操作系统和浏览器中数千个未知高危漏洞，包括OpenBSD中一个27年的bug和FFmpeg中一个通过500万次测试未被发现的16年旧漏洞。美国政府机构正在测试Mythos，财政部和其他机构表达了加入Glasswing联盟的兴趣。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/20/anthropic-white-house-mythos-washington/",
+    "publish_time": "2026-04-20T10:00:00Z"
+  },
+  {
+    "id": "news_002",
+    "title": "OpenAI Agents SDK引入沙盒执行功能",
+    "content": "OpenAI为Agents SDK引入新功能，为企业治理团队提供具有模型原生框架和原生沙盒执行功能的标准化基础设施。新功能解决了将系统从原型部署到生产环境时的架构妥协问题。Oscar Health测试了新基础设施，用于自动化临床记录工作流程。新的模型原生框架引入可配置内存、沙盒感知编排和类Codex文件系统工具。SDK支持与AWS S3、Azure Blob Storage、Google Cloud Storage和Cloudflare R2等主要企业存储提供商集成，并提供对Blaxel、Cloudflare、Daytona、E2B、Modal、Runloop和Vercel等提供商的内置支持。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/16/openai-agents-sdk-improves-governance-sandbox-execution/",
+    "publish_time": "2026-04-16T14:00:00Z"
+  },
+  {
+    "id": "news_003",
+    "title": "斯坦福2026年报告：美中AI模型性能差距缩小至2.7%",
+    "content": "斯坦福大学发布423页年度AI指数报告，显示美中AI模型性能差距已显著缩小，中国模型现在与美国模型交替占据顶级位置。报告指出AI安全基准测试严重滞后，前沿模型在责任AI基准测试中大多未报告结果。AI事件数量从2024年的233起增至2025年的362起。仅31%的美国公众信任政府监管AI，全球平均水平为54%。报告还发现，AI推理成本在18个月内下降了约280倍，训练前沿模型的计算量持续增长。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/15/us-china-ai-gap-closes-responsible-ai-concerns/",
+    "publish_time": "2026-04-15T08:00:00Z"
+  },
+  {
+    "id": "news_004",
+    "title": "AI芯片初创公司Cerebras申请IPO",
+    "content": "AI芯片初创公司Cerebras正式提交IPO申请。近期该公司宣布与亚马逊云服务(AWS)达成协议，在亚马逊数据中心使用Cerebras芯片，同时据报道与OpenAI达成一笔价值超过100亿美元的交易。Cerebras以其超大尺寸晶圆级芯片闻名，专门用于AI训练和推理工作负载。此次IPO被视为AI硬件领域的重要里程碑，反映了市场对专用AI芯片的持续需求。",
+    "source_name": "TechCrunch",
+    "source_url": "https://techcrunch.com/2026/04/18/ai-chip-startup-cerebras-files-for-ipo/",
+    "publish_time": "2026-04-18T12:00:00Z"
+  },
+  {
+    "id": "news_005",
+    "title": "OpenAI面临存在性问题讨论",
+    "content": "在Equity播客最新一期节目中，讨论围绕OpenAI的最新收购以及这些收购是否解决了公司面临的两大存在性问题展开。OpenAI近期在新闻中频繁出现，其战略决策和业务发展方向引发业界广泛关注。节目分析了公司在AI领域的竞争地位以及面临的挑战。",
+    "source_name": "TechCrunch",
+    "source_url": "https://techcrunch.com/2026/04/19/openais-existential-questions/",
+    "publish_time": "2026-04-19T14:00:00Z"
+  },
+  {
+    "id": "news_006",
+    "title": "Cadence扩展与英伟达、谷歌云的AI和机器人合作",
+    "content": "Cadence宣布扩展与英伟达和谷歌云的AI与机器人合作伙伴关系。这一合作扩展旨在加速AI和机器人技术在工业和企业应用中的部署。Cadence作为电子设计自动化软件领导者，此次合作将整合各方在AI芯片、云计算和机器人领域的优势，推动下一代智能系统的发展。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/16/cadence-expands-ai-robotic-partnerships/",
+    "publish_time": "2026-04-16T10:00:00Z"
+  },
+  {
+    "id": "news_007",
+    "title": "Commvault推出云端AI工作负载'撤销'功能",
+    "content": "Commvault推出AI Protect，为企业云环境中的AI代理提供撤销功能，类似于文本编辑器中的Ctrl-Z。该产品解决了AI代理在执行任务时可能产生的意外后果问题，使企业能够回滚AI操作造成的影响。随着越来越多企业部署AI代理自动化工作流程，这种安全机制变得越来越重要。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/15/commvault-launches-ctrl-z-cloud-ai/",
+    "publish_time": "2026-04-15T12:00:00Z"
+  },
+  {
+    "id": "news_008",
+    "title": "Bobyard 2.0发布：改进起飞功能与统一AI",
+    "content": "Bobyard发布2.0版本，为估算人员提供改进的起飞功能和统一AI能力。该版本针对制造业和工程AI领域，提升了自动化估算的准确性和效率。产品整合了多项AI功能，帮助用户更高效地完成项目规划和成本估算工作。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/20/bobyard-2-0-improved-takeoffs-unified-ai/",
+    "publish_time": "2026-04-20T09:00:00Z"
+  },
+  {
+    "id": "news_009",
+    "title": "如何准备和修复AI系统事件",
+    "content": "随着AI系统在企业中的部署日益广泛，如何准备和应对AI系统事件成为关键议题。文章探讨了AI安全事件的最佳实践，包括事前准备、事件响应流程和事后修复策略。网络安全AI领域的专家分享了处理AI系统漏洞和异常行为的经验，强调建立完善的事件响应计划的重要性。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/20/prepare-remediate-ai-system-incident/",
+    "publish_time": "2026-04-20T11:00:00Z"
+  },
+  {
+    "id": "news_010",
+    "title": "Anthropic与特朗普政府关系解冻",
+    "content": "尽管最近被五角大楼指定为供应链风险，Anthropic仍在与特朗普政府高层进行对话。此前特朗普本人曾表示政府将不再与Anthropic合作，但此后情况发生转变。联邦法官阻止了该指令的执行，使Anthropic在诉讼期间仍可与非军事机构合作。这反映了AI公司在政府关系方面面临的复杂局面。",
+    "source_name": "TechCrunch",
+    "source_url": "https://techcrunch.com/2026/04/18/anthropics-relationship-with-the-trump-administration-seems-to-be-thawing/",
+    "publish_time": "2026-04-18T07:00:00Z"
+  },
+  {
+    "id": "news_011",
+    "title": "Fermi AI核能公司CEO和CFO突然离职",
+    "content": "AI核能初创公司Fermi的CEO和CFO突然离职，引发业界关注。Fermi专注于将AI技术应用于核能领域，此次高层人事变动可能对公司发展产生重大影响。公司尚未公布离职原因和继任计划，投资者正密切关注事态发展。",
+    "source_name": "TechCrunch",
+    "source_url": "https://techcrunch.com/2026/04/20/ceo-cfo-depart-fermi-ai-nuclear/",
+    "publish_time": "2026-04-20T08:00:00Z"
+  },
+  {
+    "id": "news_012",
+    "title": "Palantir发布迷你宣言：批评包容性和'倒退'文化",
+    "content": "Palantir发布了一份迷你宣言，批评企业包容性政策和所谓的'倒退'文化。这一表态反映了科技公司在企业文化和社会议题立场上的分歧。Palantir此举引发了关于科技公司应如何在政治和社会议题上表态的广泛讨论。",
+    "source_name": "TechCrunch",
+    "source_url": "https://techcrunch.com/2026/04/19/palantir-mini-manifesto-inclusivity/",
+    "publish_time": "2026-04-19T10:00:00Z"
+  },
+  {
+    "id": "news_013",
+    "title": "2026年展望：实验性AI终结，自主系统崛起",
+    "content": "行业专家预测，生成式AI的实验阶段即将结束，2026年将迎来能够执行操作而非仅作总结的自主系统时代。Red Hat专家指出，2025年是实验之年，2026年将迎来向代理式AI的决定性转折——能够自主推理、规划和执行复杂工作流的软件实体。能源将成为关键约束，计算稀缺现在成为电网容量的函数。应用形态也将改变，用户将请求由代码和提示生成的临时模块，完成任务后即关闭。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2025/12/12/ai-in-2026-experimental-ai-concludes-autonomous-systems-rise/",
+    "publish_time": "2026-01-15T10:00:00Z"
+  },
+  {
+    "id": "news_014",
+    "title": "Citizen开发者获得专属Wingman助手",
+    "content": "针对公民开发者(Citizen Developer)群体的AI助手Wingman正式发布。该工具旨在降低开发门槛，帮助非专业程序员更高效地完成开发任务。Wingman集成了多模态AI能力，支持代码生成、调试和文档编写等功能，让业务人员也能参与应用开发。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/15/citizen-developers-wingman/",
+    "publish_time": "2026-04-15T14:00:00Z"
+  },
+  {
+    "id": "news_015",
+    "title": "无人机智能化：大型农场迎来AI农业革命",
+    "content": "AI赋能的无人机技术正在改变大型农场的运营方式。配备先进AI视觉和决策系统的无人机能够精确识别作物状况、预测病虫害并优化施肥方案。这项物理AI(Physical AI)应用正在帮助农民提高产量、降低成本并实现更可持续的农业实践。",
+    "source_name": "AI News",
+    "source_url": "https://www.artificialintelligence-news.com/2026/04/15/drones-smarter-large-farm-holdings/",
+    "publish_time": "2026-04-15T16:00:00Z"
+  }
+]
