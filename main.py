@@ -7,6 +7,7 @@ AI舆情分析日报系统 - 主程序入口
 import argparse
 import sys
 import json
+import traceback
 from pathlib import Path
 from datetime import datetime
 
@@ -17,6 +18,7 @@ from src.data_processor import DataProcessor
 from src.analyzer import NewsAnalyzer
 from src.report_generator import ReportGenerator
 from src.visualizer import NewsVisualizer
+from src.error_handler import ErrorHandler, logger
 from config import RAW_NEWS_FILE, STRUCTURED_NEWS_FILE, DAILY_REPORT_FILE, VISUALIZATION_FILE
 
 
@@ -33,22 +35,27 @@ def run_full_pipeline(skip_extraction: bool = False, use_llm: bool = True):
     print(f"📅 开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 60)
 
+    errors = []
+
     # Step 1: 数据清洗与结构化抽取
     if not skip_extraction:
         print("\n" + "▶" * 20)
         print("Step 1: 数据清洗与结构化抽取")
         print("▶" * 20)
 
-        processor = DataProcessor()
+        try:
+            processor = DataProcessor()
+            raw_news = processor.load_raw_news()
 
-        # 加载原始数据
-        raw_news = processor.load_raw_news()
-
-        # 处理数据（分批处理）
-        structured_news = processor.process_all_news(raw_news)
-
-        # 保存结果
-        processor.save_structured_news(structured_news)
+            if not raw_news:
+                logger.error("❌ 未找到原始新闻数据")
+                errors.append("数据加载失败")
+            else:
+                structured_news = processor.process_all_news(raw_news)
+                processor.save_structured_news(structured_news)
+        except Exception as e:
+            logger.error(f"❌ 数据处理失败: {e}")
+            errors.append(f"数据处理: {str(e)}")
     else:
         print("\n⏭️ 跳过数据抽取步骤，使用已有结构化数据")
 
@@ -57,36 +64,52 @@ def run_full_pipeline(skip_extraction: bool = False, use_llm: bool = True):
     print("Step 2: 数据分析与趋势识别")
     print("▶" * 20)
 
-    analyzer = NewsAnalyzer()
-    analyzer.load_structured_news()
-    analysis_report = analyzer.generate_analysis_report()
+    try:
+        analyzer = NewsAnalyzer()
+        analyzer.load_structured_news()
+        analysis_report = analyzer.generate_analysis_report()
 
-    # 保存分析报告
-    analysis_path = Path(__file__).parent / 'output' / 'analysis_report.json'
-    analysis_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(analysis_path, 'w', encoding='utf-8') as f:
-        json.dump(analysis_report, f, ensure_ascii=False, indent=2)
-    print(f"💾 分析数据已保存: {analysis_path}")
+        # 保存分析报告
+        analysis_path = Path(__file__).parent / 'output' / 'analysis_report.json'
+        analysis_path.parent.mkdir(parents=True, exist_ok=True)
+        ErrorHandler.safe_save_json(analysis_path, analysis_report)
+        print(f"💾 分析数据已保存: {analysis_path}")
+    except Exception as e:
+        logger.error(f"❌ 数据分析失败: {e}")
+        errors.append(f"数据分析: {str(e)}")
 
     # Step 3: 报告生成
     print("\n" + "▶" * 20)
     print("Step 3: 分析报告生成")
     print("▶" * 20)
 
-    report_generator = ReportGenerator(use_llm=use_llm)
-    report = report_generator.generate_report()
+    try:
+        report_generator = ReportGenerator(use_llm=use_llm)
+        report_generator.generate_report()
+    except Exception as e:
+        logger.error(f"❌ 报告生成失败: {e}")
+        errors.append(f"报告生成: {str(e)}")
 
     # Step 4: 可视化生成
     print("\n" + "▶" * 20)
     print("Step 4: 可视化页面生成")
     print("▶" * 20)
 
-    visualizer = NewsVisualizer()
-    visualizer.generate_visualization()
+    try:
+        visualizer = NewsVisualizer()
+        visualizer.generate_visualization()
+    except Exception as e:
+        logger.error(f"❌ 可视化生成失败: {e}")
+        errors.append(f"可视化生成: {str(e)}")
 
-    # 完成
+    # 完成汇总
     print("\n" + "=" * 60)
-    print("✅ 处理完成！")
+    if errors:
+        print("⚠️ 处理完成（有错误）")
+        for err in errors:
+            print(f"  - {err}")
+    else:
+        print("✅ 处理完成！")
     print("=" * 60)
     print(f"📅 完成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("\n📁 输出文件:")
@@ -105,12 +128,21 @@ def run_extraction_only():
     print("🔄 数据清洗与结构化抽取")
     print("=" * 60)
 
-    processor = DataProcessor()
-    raw_news = processor.load_raw_news()
-    structured_news = processor.process_all_news(raw_news)
-    processor.save_structured_news(structured_news)
+    try:
+        processor = DataProcessor()
+        raw_news = processor.load_raw_news()
 
-    print("\n✅ 数据抽取完成")
+        if not raw_news:
+            logger.error("❌ 未找到原始新闻数据")
+            return
+
+        structured_news = processor.process_all_news(raw_news)
+        processor.save_structured_news(structured_news)
+
+        print("\n✅ 数据抽取完成")
+    except Exception as e:
+        logger.error(f"❌ 数据抽取失败: {e}")
+        logger.error(traceback.format_exc())
 
 
 def run_analysis_only():
@@ -119,17 +151,20 @@ def run_analysis_only():
     print("📊 数据分析与趋势识别")
     print("=" * 60)
 
-    analyzer = NewsAnalyzer()
-    analyzer.load_structured_news()
-    report = analyzer.generate_analysis_report()
+    try:
+        analyzer = NewsAnalyzer()
+        analyzer.load_structured_news()
+        report = analyzer.generate_analysis_report()
 
-    # 保存报告
-    analysis_path = Path(__file__).parent / 'output' / 'analysis_report.json'
-    analysis_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(analysis_path, 'w', encoding='utf-8') as f:
-        json.dump(report, f, ensure_ascii=False, indent=2)
+        # 保存报告
+        analysis_path = Path(__file__).parent / 'output' / 'analysis_report.json'
+        analysis_path.parent.mkdir(parents=True, exist_ok=True)
+        ErrorHandler.safe_save_json(analysis_path, report)
 
-    print("\n✅ 分析完成")
+        print("\n✅ 分析完成")
+    except Exception as e:
+        logger.error(f"❌ 数据分析失败: {e}")
+        logger.error(traceback.format_exc())
 
 
 def run_report_only(use_llm: bool = True):
@@ -138,10 +173,14 @@ def run_report_only(use_llm: bool = True):
     print("📝 分析报告生成")
     print("=" * 60)
 
-    generator = ReportGenerator(use_llm=use_llm)
-    generator.generate_report()
+    try:
+        generator = ReportGenerator(use_llm=use_llm)
+        generator.generate_report()
 
-    print("\n✅ 报告生成完成")
+        print("\n✅ 报告生成完成")
+    except Exception as e:
+        logger.error(f"❌ 报告生成失败: {e}")
+        logger.error(traceback.format_exc())
 
 
 def run_visualization_only():
@@ -150,10 +189,14 @@ def run_visualization_only():
     print("📈 可视化页面生成")
     print("=" * 60)
 
-    visualizer = NewsVisualizer()
-    visualizer.generate_visualization()
+    try:
+        visualizer = NewsVisualizer()
+        visualizer.generate_visualization()
 
-    print("\n✅ 可视化生成完成")
+        print("\n✅ 可视化生成完成")
+    except Exception as e:
+        logger.error(f"❌ 可视化生成失败: {e}")
+        logger.error(traceback.format_exc())
 
 
 def main():

@@ -4,6 +4,7 @@
 """
 
 import json
+import logging
 from typing import Dict, Any, List
 from datetime import datetime
 from pathlib import Path
@@ -12,6 +13,7 @@ from collections import Counter
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from config import STRUCTURED_NEWS_FILE, OUTPUT_DIR, VISUALIZATION_FILE, DAILY_REPORT_FILE
+from src.error_handler import ErrorHandler, logger
 
 
 class NewsVisualizer:
@@ -22,21 +24,28 @@ class NewsVisualizer:
         self.analysis_data = {}
 
     def load_data(self) -> None:
-        with open(STRUCTURED_NEWS_FILE, 'r', encoding='utf-8') as f:
-            self.news_list = json.load(f)
+        """加载结构化数据和分析数据"""
+        # 安全加载新闻数据
+        self.news_list = ErrorHandler.safe_load_json(STRUCTURED_NEWS_FILE, default=[])
+        if not self.news_list:
+            logger.warning("⚠️ 未找到新闻数据，将生成空的可视化页面")
 
+        # 安全加载分析数据
         analysis_path = OUTPUT_DIR / 'analysis_report.json'
-        if analysis_path.exists():
-            with open(analysis_path, 'r', encoding='utf-8') as f:
-                self.analysis_data = json.load(f)
+        self.analysis_data = ErrorHandler.safe_load_json(analysis_path, default={})
 
         print(f"📂 加载 {len(self.news_list)} 条新闻数据")
 
     def load_markdown_report(self) -> str:
-        if DAILY_REPORT_FILE.exists():
-            with open(DAILY_REPORT_FILE, 'r', encoding='utf-8') as f:
-                return f.read()
-        return "# 暂无报告\n\n请先运行报告生成模块。"
+        """加载Markdown报告，带有错误处理"""
+        if not DAILY_REPORT_FILE.exists():
+            return "# 暂无报告\n\n请先运行报告生成模块。"
+
+        content = ErrorHandler.safe_load_text(DAILY_REPORT_FILE, default="")
+        if not content:
+            return "# 报告加载失败\n\n请检查报告文件是否存在或格式是否正确。"
+
+        return content
 
     def generate_comprehensive_html(self) -> str:
         # 统计数据
@@ -702,14 +711,35 @@ class NewsVisualizer:
         return '\n'.join(parts)
 
     def generate_visualization(self) -> str:
+        """生成可视化页面"""
         print("\n📈 生成可视化页面...")
-        self.load_data()
-        html = self.generate_comprehensive_html()
-        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        with open(VISUALIZATION_FILE, 'w', encoding='utf-8') as f:
-            f.write(html)
-        print(f"✅ 已生成: {VISUALIZATION_FILE}")
-        return html
+
+        try:
+            self.load_data()
+            html = self.generate_comprehensive_html()
+
+            # 确保输出目录存在
+            OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+            # 保存HTML文件
+            with open(VISUALIZATION_FILE, 'w', encoding='utf-8') as f:
+                f.write(html)
+
+            print(f"✅ 已生成: {VISUALIZATION_FILE}")
+            return html
+
+        except Exception as e:
+            logger.error(f"❌ 生成可视化页面失败: {e}")
+            # 返回一个简单的错误页面
+            error_html = f"""<!DOCTYPE html>
+<html>
+<head><title>错误</title></head>
+<body>
+<h1>生成可视化页面时发生错误</h1>
+<p>错误信息: {str(e)}</p>
+</body>
+</html>"""
+            return error_html
 
 
 if __name__ == "__main__":

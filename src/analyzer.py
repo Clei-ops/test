@@ -4,6 +4,7 @@
 """
 
 import json
+import logging
 from typing import List, Dict, Any, Tuple
 from collections import Counter, defaultdict
 from datetime import datetime
@@ -12,6 +13,7 @@ from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from config import STRUCTURED_NEWS_FILE
+from src.error_handler import ErrorHandler, FallbackStrategy, logger
 
 
 class NewsAnalyzer:
@@ -27,8 +29,13 @@ class NewsAnalyzer:
             file_path = STRUCTURED_NEWS_FILE
 
         print(f"📂 加载结构化数据: {file_path}")
-        with open(file_path, 'r', encoding='utf-8') as f:
-            self.news_list = json.load(f)
+
+        # 使用错误处理器的安全加载
+        self.news_list = ErrorHandler.safe_load_json(file_path, default=[])
+
+        if not self.news_list:
+            logger.warning("⚠️ 未找到有效新闻数据，将返回空分析结果")
+            self.news_list = []
 
         print(f"✅ 成功加载 {len(self.news_list)} 条新闻")
         return self.news_list
@@ -340,18 +347,24 @@ class NewsAnalyzer:
         """生成完整分析报告"""
         print("\n🔍 开始数据分析...")
 
-        report = {
-            'generated_at': datetime.now().isoformat(),
-            'statistics': self.get_overall_statistics(),
-            'hotspots': self.identify_hotspots(),
-            'entities': self.analyze_entities(),
-            'trends': self.analyze_trends(),
-            'sentiment_analysis': self.analyze_sentiment(),
-            'risk_opportunity': self.analyze_risk_opportunity()
-        }
+        try:
+            report = {
+                'generated_at': datetime.now().isoformat(),
+                'statistics': self.get_overall_statistics(),
+                'hotspots': self.identify_hotspots(),
+                'entities': self.analyze_entities(),
+                'trends': self.analyze_trends(),
+                'sentiment_analysis': self.analyze_sentiment(),
+                'risk_opportunity': self.analyze_risk_opportunity()
+            }
 
-        print("✅ 分析完成")
-        return report
+            print("✅ 分析完成")
+            return report
+
+        except Exception as e:
+            logger.error(f"❌ 分析报告生成失败: {e}")
+            # 返回默认结构
+            return FallbackStrategy.get_default_analysis_report()
 
 
 def main():

@@ -349,6 +349,306 @@ Markdown格式。
 | **分析结果矛盾** | 逻辑一致性检查 | 多轮校验，对比人工判断，必要时回退重分析 |
 | **网络/AI调用失败** | 异常捕获 | 指数退避重试，记录失败点，支持断点续传 |
 
+### 3.4 错误兜底处理机制
+
+系统实现了完整的错误兜底处理机制，确保在任何异常情况下都能优雅降级并继续执行。
+
+#### 3.4.1 错误处理模块架构
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        错误处理模块架构                                    │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   ┌─────────────────────────────────────────────────────────────────┐   │
+│   │                    error_handler.py 模块                         │   │
+│   ├─────────────────────────────────────────────────────────────────┤   │
+│   │  ErrorHandler 类:                                                │   │
+│   │    - safe_load_json()     安全加载JSON文件                        │   │
+│   │    - safe_save_json()     安全保存JSON文件                        │   │
+│   │    - safe_load_text()     安全加载文本文件                        │   │
+│   │    - safe_get()           安全获取嵌套字典值                       │   │
+│   │                                                                  │   │
+│   │  FallbackStrategy 类:                                           │   │
+│   │    - get_default_news_structure()    降级新闻结构                 │   │
+│   │    - get_default_analysis_report()   降级分析报告                 │   │
+│   │                                                                  │   │
+│   │  DataValidator 类:                                              │   │
+│   │    - validate_news()      验证新闻数据有效性                      │   │
+│   │    - sanitize_string()    清理字符串                             │   │
+│   │    - ensure_list()        确保返回列表                           │   │
+│   │                                                                  │   │
+│   │  装饰器:                                                         │   │
+│   │    - @retry               API调用自动重试（指数退避）              │   │
+│   │    - @handle_errors       函数级错误捕获与降级                    │   │
+│   └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 3.4.2 各模块错误处理详情
+
+##### 数据处理模块 (data_processor.py)
+
+| 错误场景 | 处理方式 | 降级策略 |
+|:---------|:---------|:---------|
+| API Key 未设置 | 检测配置，标记降级模式 | 使用 `FallbackStrategy.get_default_news_structure()` |
+| Prompt 模板加载失败 | 返回空字符串，标记降级模式 | 跳过LLM调用，使用基础结构 |
+| JSON 解析失败 | 捕获 `JSONDecodeError` | 使用降级结构并记录错误 |
+| LLM 调用超时 | `@retry` 装饰器自动重试2次 | 重试失败后使用降级结构 |
+| 新闻数据为空 | 跳过处理，返回空列表 | 记录警告日志，继续后续流程 |
+| 数据清洗异常 | 捕获异常，生成最小有效结构 | 确保流程不中断 |
+
+```python
+# 示例：降级模式自动检测
+def __init__(self):
+    self._use_fallback = False
+
+    if not DASHSCOPE_API_KEY or DASHSCOPE_API_KEY == 'your_api_key_here':
+        logger.warning("⚠️ DASHSCOPE_API_KEY 未设置或无效，将使用降级模式")
+        self._use_fallback = True
+    else:
+        try:
+            self.client = OpenAI(api_key=DASHSCOPE_API_KEY, base_url=API_BASE_URL)
+        except Exception as e:
+            logger.error(f"❌ API客户端初始化失败: {e}")
+            self._use_fallback = True
+```
+
+##### 分析模块 (analyzer.py)
+
+| 错误场景 | 处理方式 | 降级策略 |
+|:---------|:---------|:---------|
+| 数据文件不存在 | `ErrorHandler.safe_load_json()` | 返回空列表，继续执行 |
+| 数据文件格式错误 | 捕获 `JSONDecodeError` | 返回空列表，记录错误日志 |
+| 分析过程异常 | `try-except` 包裹整个分析流程 | 返回 `FallbackStrategy.get_default_analysis_report()` |
+
+##### 报告生成模块 (report_generator.py)
+
+| 错误场景 | 处理方式 | 降级策略 |
+|:---------|:---------|:---------|
+| OpenAI 库未安装 | `try-import` 检测 | 自动切换到模板生成模式 |
+| LLM 调用失败 | 捕获异常，记录日志 | 自动回退到模板生成 |
+| 结构化数据为空 | 检查数据长度 | 生成空报告提示 |
+| 分析报告生成异常 | 全局异常捕获 | 生成错误报告，包含错误信息 |
+
+##### 可视化模块 (visualizer.py)
+
+| 错误场景 | 处理方式 | 降级策略 |
+|:---------|:---------|:---------|
+| 新闻数据加载失败 | `ErrorHandler.safe_load_json()` | 返回空列表，生成空页面 |
+| 分析数据加载失败 | `ErrorHandler.safe_load_json()` | 返回空字典，图表显示"暂无数据" |
+| Markdown 报告加载失败 | `ErrorHandler.safe_load_text()` | 显示"报告加载失败"提示 |
+| HTML 生成异常 | 全局异常捕获 | 生成简单错误页面 |
+
+##### 主程序 (main.py)
+
+| 错误场景 | 处理方式 | 降级策略 |
+|:---------|:---------|:---------|
+| 模块导入失败 | 安全导入函数 | 标记模块不可用，显示错误信息 |
+| 单步处理失败 | 各步骤独立 `try-except` | 记录错误，继续执行后续步骤 |
+| 整体流程异常 | 收集所有错误 | 汇总显示，不中断程序 |
+
+#### 3.4.3 降级策略数据结构
+
+##### 降级新闻结构
+
+```json
+{
+  "id": "news_error_{hash}",
+  "title": "数据清洗错误",
+  "content": "原始内容或标题",
+  "source": {
+    "name": "Unknown",
+    "url": "",
+    "type": "media",
+    "region": "global"
+  },
+  "publishTime": "",
+  "category": {"primary": "技术", "secondary": ""},
+  "entities": {"companies": [], "products": [], "technologies": [], "people": []},
+  "analysis": {
+    "sentiment": "neutral",
+    "importance": "medium",
+    "keywords": [],
+    "summary": "内容摘要（截断）"
+  },
+  "impact": {"area": [], "level": "company", "description": ""},
+  "risk_opportunity": {
+    "type": "neutral",
+    "category": "",
+    "description": "",
+    "affected_entities": [],
+    "suggestion": ""
+  },
+  "_fallback": true
+}
+```
+
+##### 降级分析报告结构
+
+```json
+{
+  "generated_at": "",
+  "statistics": {
+    "total_count": 0,
+    "sources": {},
+    "categories": {},
+    "sentiment_distribution": {}
+  },
+  "hotspots": [],
+  "entities": {
+    "top_companies": {},
+    "top_products": {},
+    "top_technologies": {},
+    "top_people": {}
+  },
+  "trends": {"category_trends": {}, "tech_evolution": [], "company_activity_trends": []},
+  "sentiment_analysis": {"sentiment_by_category": {}, "company_sentiment_scores": {}},
+  "risk_opportunity": {
+    "risks": [],
+    "opportunities": [],
+    "risk_by_category": {},
+    "opportunity_by_category": {},
+    "affected_entities_risk": {},
+    "affected_entities_opportunity": {},
+    "risk_count": 0,
+    "opportunity_count": 0
+  }
+}
+```
+
+#### 3.4.4 日志系统
+
+系统使用 Python `logging` 模块记录所有错误和警告：
+
+- **日志输出位置**：
+  - 控制台：实时显示处理进度和错误
+  - 文件：`ai_news_analyzer.log`（持久化保存）
+
+- **日志级别**：
+  - `INFO`：正常处理流程
+  - `WARNING`：可恢复的异常情况
+  - `ERROR`：需要关注的错误
+
+- **日志格式**：`%(asctime)s - %(levelname)s - %(message)s`
+
+#### 3.4.5 错误处理流程图
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          错误处理流程                                     │
+└─────────────────────────────────────────────────────────────────────────┘
+
+                    ┌─────────────┐
+                    │   开始处理   │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  尝试执行    │
+                    └──────┬──────┘
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+              ▼                         ▼
+        ┌──────────┐             ┌───────────┐
+        │  成功    │             │  发生错误  │
+        └────┬─────┘             └─────┬─────┘
+             │                         │
+             │                         ▼
+             │                  ┌──────────────┐
+             │                  │  记录错误日志  │
+             │                  └──────┬───────┘
+             │                         │
+             │                         ▼
+             │                  ┌──────────────┐
+             │                  │  重试（如有）  │
+             │                  │  @retry装饰器 │
+             │                  └──────┬───────┘
+             │                         │
+             │              ┌──────────┴──────────┐
+             │              │                     │
+             │              ▼                     ▼
+             │        ┌──────────┐          ┌───────────┐
+             │        │ 重试成功 │          │ 重试失败  │
+             │        └────┬─────┘          └─────┬─────┘
+             │             │                      │
+             │             │                      ▼
+             │             │               ┌──────────────┐
+             │             │               │  应用降级策略  │
+             │             │               │ FallbackStrategy│
+             │             │               └──────┬───────┘
+             │             │                      │
+             │             │                      ▼
+             │             │               ┌──────────────┐
+             │             │               │ 返回默认结构  │
+             │             │               └──────┬───────┘
+             │             │                      │
+             └─────────────┴──────────────────────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │ 继续下一步骤 │
+                    └─────────────┘
+```
+
+#### 3.4.6 典型错误场景处理示例
+
+##### 场景1：API Key 未设置
+
+```python
+# 处理方式：自动降级模式
+def __init__(self):
+    if not DASHSCOPE_API_KEY or DASHSCOPE_API_KEY == 'your_api_key_here':
+        logger.warning("⚠️ DASHSCOPE_API_KEY 未设置，将使用降级模式")
+        self._use_fallback = True
+
+def extract_structured_data(self, news):
+    if self._use_fallback or not self.client:
+        return FallbackStrategy.get_default_news_structure(news)
+    # 正常LLM调用...
+```
+
+##### 场景2：文件加载失败
+
+```python
+# 处理方式：安全加载，返回默认值
+news_list = ErrorHandler.safe_load_json(file_path, default=[])
+if not news_list:
+    logger.warning("⚠️ 未找到有效新闻数据")
+```
+
+##### 场景3：LLM 调用超时
+
+```python
+# 处理方式：自动重试 + 降级
+@retry(max_retries=2, delay=1.0, exceptions=(Exception,))
+def extract_structured_data(self, news):
+    try:
+        response = self.client.chat.completions.create(...)
+        return parse_response(response)
+    except Exception as e:
+        logger.error(f"❌ LLM提取失败: {e}")
+        return FallbackStrategy.get_default_news_structure(news)
+```
+
+##### 场景4：整步处理失败
+
+```python
+# 处理方式：独立异常捕获，错误汇总
+errors = []
+
+try:
+    analyzer = NewsAnalyzer()
+    analysis_report = analyzer.generate_analysis_report()
+except Exception as e:
+    logger.error(f"❌ 数据分析失败: {e}")
+    errors.append(f"数据分析: {str(e)}")
+
+# 继续后续步骤，不中断整体流程
+```
+
 ---
 
 ## 四、核心流程说明

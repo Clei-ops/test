@@ -11,8 +11,8 @@
     },
     "publishTime": "2026-04-20T10:00:00Z",
     "category": {
-      "primary": "应用",
-      "secondary": "网络安全"
+      "primary": "技术",
+      "secondary": "网络安全、大模型"
     },
     "entities": {
       "companies": [
@@ -23,7 +23,7 @@
         "Mythos"
       ],
       "technologies": [
-        "AI-powered vulnerability discovery",
+        "AI-driven vulnerability discovery",
         "autonomous exploit generation"
       ],
       "people": [
@@ -38,32 +38,31 @@
       "keywords": [
         "Mythos",
         "AI cybersecurity",
-        "White House",
         "vulnerability discovery",
-        "Glasswing"
+        "White House engagement",
+        "Glasswing Alliance"
       ],
-      "summary": "Anthropic's Mythos AI gains U.S. government recognition for autonomous vulnerability discovery, reversing prior supply chain concerns."
+      "summary": "Anthropic's Mythos AI gains U.S. government recognition for autonomous zero-day discovery, reversing prior regulatory concerns."
     },
     "impact": {
       "area": [
         "cybersecurity",
-        "AI safety",
-        "government technology procurement"
+        "artificial intelligence"
       ],
-      "level": "industry",
-      "description": "Validates AI-driven security automation as a national priority, potentially reshaping federal cyber defense standards and vendor adoption."
+      "level": "technology",
+      "description": "Advances AI-powered vulnerability research; sets new benchmark for autonomous security tooling in critical infrastructure."
     },
     "risk_opportunity": {
       "type": "opportunity",
       "category": "partnership_opportunity",
-      "description": "Mythos' validation opens doors for Anthropic to partner with U.S. federal agencies and expand Glasswing alliance membership; strengthens its position in government AI procurement pipelines.",
+      "description": "Mythos enables deep public-sector collaboration in cybersecurity; Glasswing Alliance expansion offers Anthropic strategic access to federal agencies and defense contractors.",
       "affected_entities": [
         "Anthropic",
         "Mythos",
         "Glasswing Alliance",
-        "U.S. federal cybersecurity programs"
+        "U.S. federal agencies"
       ],
-      "suggestion": "Accelerate public-sector deployment frameworks and standardize Mythos integration protocols for government use."
+      "suggestion": "Accelerate government certification and co-develop classified-use variants with DHS/CISA."
     }
   },
   {
@@ -79,7 +78,7 @@
     "publishTime": "2026-04-16T14:00:00Z",
     "category": {
       "primary": "产品",
-      "secondary": "大模型、智能体开发、企业级AI基础设施"
+      "secondary": "大模型、智能体、开发工具"
     },
     "entities": {
       "companies": [
@@ -104,7 +103,7 @@
         "模型原生框架",
         "沙盒感知编排",
         "类Codex文件系统",
-        "智能体（Agent）开发"
+        "智能体（Agent）"
       ],
       "people": []
     },
@@ -115,10 +114,10 @@
         "Agents SDK",
         "沙盒执行",
         "模型原生框架",
-        "企业AI治理",
-        "智能体基础设施"
+        "企业治理",
+        "智能体开发"
       ],
-      "summary": "OpenAI发布Agents SDK沙盒执行功能，强化企业级智能体开发与安全治理能力。"
+      "summary": "OpenAI发布Agents SDK沙盒执行功能，强化企业级智能体安全部署与治理能力。"
     },
     "impact": {
       "area": [
@@ -127,23 +126,23 @@
         "企业AI应用"
       ],
       "level": "product",
-      "description": "显著提升Agents SDK在生产环境中的安全性、可控性与集成能力，推动智能体技术企业落地。"
+      "description": "显著提升Agents SDK在生产环境中的安全性、可控性与集成能力，推动智能体工程化落地。"
     },
     "risk_opportunity": {
       "type": "opportunity",
       "category": "technology_opportunity",
-      "description": "为开发者提供开箱即用的安全沙盒与企业存储集成能力，降低智能体工程化门槛，加速医疗、金融等高合规要求场景的AI Agent应用落地。",
+      "description": "为企业和开发者提供开箱即用的安全执行环境与标准化智能体开发范式，降低智能体生产化门槛，加速医疗、金融等高合规要求场景落地。",
       "affected_entities": [
         "OpenAI Agents SDK",
-        "Oscar Health",
-        "enterprise AI adopters",
-        "cloud infrastructure providers"
+        "企业AI平台",
+        "医疗AI应用",
+        "云服务集成生态"
       ],
-      "suggestion": "企业应评估接入该SDK以提升AI Agent生产部署的安全性与治理效率。"
+      "suggestion": "开发者应评估迁移至新SDK；企业可优先在临床、合规敏感场景试点沙盒智能体。"
     }
   },
   {
-    "id": "新闻ID（使用提供的ID）",
+    "id": "news_2026_us_china_ai_gap",
     "title": "斯坦福2026年报告：美中AI模型性能差距缩小至2.7%",
     "content": "斯坦福大学发布423页年度AI指数报告，显示美中AI模型性能差距已显著缩小，中国模型现在与美国模型交替占据顶级位置。报告指出AI安全基准测试严重滞后，前沿模型在责任AI基准测试中大多未报告结果。AI事件数量从2024年的233起增至2025年的362起。仅31%的美国公众信任政府监管AI，全球平均水平为54%。报告还发现，AI推理成本在18个月内下降了约280倍，训练前沿模型的计算量持续增长。",
     "source": {
@@ -166,7 +165,7 @@
         "大语言模型",
         "AI安全基准测试",
         "AI推理",
-        "模型训练"
+        "模型训练计算"
       ],
       "people": []
     },
@@ -175,12 +174,12 @@
       "importance": "high",
       "keywords": [
         "AI指数报告",
-        "中美AI差距",
-        "AI安全",
-        "推理成本",
-        "责任AI"
+        "美中AI差距",
+        "责任AI",
+        "AI推理成本",
+        "AI安全"
       ],
-      "summary": "斯坦福2026年AI指数报告指出中美模型性能差距缩至2.7%，但AI安全评估滞后、事件激增、公众信任度低。"
+      "summary": "斯坦福2026年AI指数报告揭示美中模型性能差距收窄，但责任AI评估滞后、AI事件激增。"
     },
     "impact": {
       "area": [
@@ -189,18 +188,18 @@
         "模型评估"
       ],
       "level": "industry",
-      "description": "影响全球AI研发范式、安全治理框架及国际竞争格局，推动责任AI评估体系加速建设。"
+      "description": "影响全球AI研发范式、安全治理框架及中美技术竞争格局。"
     },
     "risk_opportunity": {
       "type": "risk",
       "category": "technical_risk",
-      "description": "前沿模型在责任AI基准测试中普遍缺失结果，叠加AI事件年增55%，暴露模型安全性、可解释性与风险监测能力严重不足，可能引发监管强化与应用信任危机。",
+      "description": "前沿模型在责任AI基准测试中普遍缺乏结果披露，暴露AI安全评估体系滞后，可能加剧模型滥用、偏见和不可控风险。",
       "affected_entities": [
+        "责任AI基准测试体系",
         "前沿大语言模型",
-        "AI安全基准测试体系",
-        "AI部署企业"
+        "AI监管框架"
       ],
-      "suggestion": "加快构建透明、可复现的责任AI评估标准，强制头部模型披露关键安全指标。"
+      "suggestion": "推动强制性责任AI透明度披露标准，加强跨机构安全基准共建。"
     }
   },
   {
@@ -226,12 +225,12 @@
       ],
       "products": [
         "Cerebras芯片",
-        "晶圆级芯片"
+        "AWS数据中心"
       ],
       "technologies": [
+        "晶圆级芯片",
         "AI训练",
-        "AI推理",
-        "晶圆级集成"
+        "AI推理"
       ],
       "people": []
     },
@@ -245,7 +244,7 @@
         "AWS",
         "OpenAI"
       ],
-      "summary": "AI芯片公司Cerebras提交IPO申请，并获AWS及OpenAI重大合作，标志AI硬件商业化关键进展。"
+      "summary": "AI芯片公司Cerebras提交IPO申请，并获AWS及OpenAI重大合作，标志AI硬件商业化加速。"
     },
     "impact": {
       "area": [
@@ -254,18 +253,18 @@
         "云计算"
       ],
       "level": "industry",
-      "description": "推动专用AI芯片赛道资本化与规模化，强化AI基础设施自主可控趋势。"
+      "description": "推动专用AI芯片赛道资本化与生态建设，强化AI基础设施自主性。"
     },
     "risk_opportunity": {
       "type": "opportunity",
       "category": "investment_opportunity",
-      "description": "Cerebras IPO为投资者提供稀缺的高性能AI芯片标的；与AWS、OpenAI深度绑定验证技术路线与商业潜力，有望带动AI硬件投资热度回升。",
+      "description": "Cerebras IPO为投资者提供稀缺的高性能AI芯片标的；与AWS、OpenAI合作验证技术路径与商业潜力，有望带动AI硬件投资热度。",
       "affected_entities": [
         "Cerebras",
         "AI chip ecosystem",
         "cloud AI infrastructure"
       ],
-      "suggestion": "关注IPO定价与后续产能落地节奏，评估其在大模型训练市场的长期替代能力。"
+      "suggestion": "关注IPO定价与后续产能落地节奏，评估其在大模型训练市场的长期竞争力。"
     }
   },
   {
@@ -321,11 +320,11 @@
       "affected_entities": [
         "OpenAI"
       ],
-      "suggestion": "加速整合收购能力，明确技术路线与治理框架以稳定市场预期。"
+      "suggestion": "加速透明化战略沟通，明确技术路线与商业化路径以稳定生态信心。"
     }
   },
   {
-    "id": "news_20260416_cadence_nvidia_googlecloud",
+    "id": "news_20260416_cadence_nvidia_gcp",
     "title": "Cadence扩展与英伟达、谷歌云的AI和机器人合作",
     "content": "Cadence宣布扩展与英伟达和谷歌云的AI与机器人合作伙伴关系。这一合作扩展旨在加速AI和机器人技术在工业和企业应用中的部署。Cadence作为电子设计自动化软件领导者，此次合作将整合各方在AI芯片、云计算和机器人领域的优势，推动下一代智能系统的发展。",
     "source": {
@@ -373,24 +372,24 @@
         "云计算"
       ],
       "level": "industry",
-      "description": "推动AI芯片设计、云边协同及机器人系统集成在工业场景规模化应用。"
+      "description": "推动AI芯片设计、云边协同与机器人系统集成，强化智能硬件全栈生态。"
     },
     "risk_opportunity": {
       "type": "opportunity",
       "category": "partnership_opportunity",
-      "description": "三方强强联合构建AI+机器人全栈生态，为EDA厂商、云服务商与AI芯片公司提供跨域协作范式，有望催生新型智能硬件开发平台和服务模式。",
+      "description": "三方强强联合构建AI+机器人+EDA+云基础设施闭环，为EDA厂商、云服务商及芯片客户创造跨域协同新范式，加速行业标准化与规模化部署。",
       "affected_entities": [
         "Cadence",
         "英伟达",
         "谷歌云",
-        "AI芯片设计工具链",
-        "企业级机器人解决方案"
+        "AI芯片设计企业",
+        "工业机器人厂商"
       ],
-      "suggestion": "加快联合参考设计与开发者支持计划，抢占工业AI系统标准话语权。"
+      "suggestion": "EDA与云服务商可借势拓展垂直行业解决方案，芯片企业应加强与AI平台及工具链协同。"
     }
   },
   {
-    "id": "news-20260415-commvault-ai-protect",
+    "id": "news_20260415_commvault_ai_protect",
     "title": "Commvault推出云端AI工作负载'撤销'功能",
     "content": "Commvault推出AI Protect，为企业云环境中的AI代理提供撤销功能，类似于文本编辑器中的Ctrl-Z。该产品解决了AI代理在执行任务时可能产生的意外后果问题，使企业能够回滚AI操作造成的影响。随着越来越多企业部署AI代理自动化工作流程，这种安全机制变得越来越重要。",
     "source": {
@@ -423,32 +422,31 @@
       "importance": "medium",
       "keywords": [
         "AI safety",
-        "cloud AI",
         "rollback",
         "AI agents",
-        "enterprise AI"
+        "cloud security",
+        "AI operations"
       ],
-      "summary": "Commvault发布AI Protect，为云中AI代理提供类似Ctrl-Z的撤销功能，提升企业AI操作安全性。"
+      "summary": "Commvault发布AI Protect，为云中AI代理提供类似Ctrl-Z的撤销功能，提升AI操作安全性。"
     },
     "impact": {
       "area": [
         "AI operations",
-        "cloud security",
-        "AI governance"
+        "cloud security"
       ],
       "level": "product",
-      "description": "为AI代理操作引入可逆性机制，增强企业级AI工作负载的安全可控性。"
+      "description": "为AI代理在云环境中的误操作提供可逆机制，强化企业级AI工作负载治理能力。"
     },
     "risk_opportunity": {
       "type": "opportunity",
       "category": "technology_opportunity",
-      "description": "填补AI代理运行时安全控制空白，提供可借鉴的‘AI Undo’技术范式，推动AI运维（AIOps）与AI治理工具发展。",
+      "description": "该撤销机制填补了AI代理生产化部署中关键的安全治理空白，为AI Ops工具链提供新范式，有望推动AI安全标准演进和第三方集成生态发展。",
       "affected_entities": [
         "AI Protect",
-        "enterprise AI platforms",
-        "cloud AI orchestration tools"
+        "cloud AI platforms",
+        "enterprise AI workflows"
       ],
-      "suggestion": "企业应评估集成此类撤销能力以强化AI治理；厂商可拓展至多模态AI操作回滚。"
+      "suggestion": "企业应评估集成AI Protect以增强AI代理容错能力；开发者可探索兼容性适配与扩展。"
     }
   },
   {
@@ -504,13 +502,13 @@
     "risk_opportunity": {
       "type": "opportunity",
       "category": "business_opportunity",
-      "description": "为工程咨询、EPC企业和制造企业提供了高精度、低门槛的AI驱动估算解决方案，填补垂直领域智能化工具空白。",
+      "description": "为工程咨询、EPC企业和制造企业提供了更精准高效的数字化估算工具，有望拓展B2B销售场景与行业解决方案落地。",
       "affected_entities": [
         "Bobyard",
-        "manufacturing firms",
-        "engineering contractors"
+        "Bobyard 2.0",
+        "engineering estimation software"
       ],
-      "suggestion": "加速行业客户试点落地，构建垂直场景案例库以推动规模化采用。"
+      "suggestion": "加速垂直行业客户试点，联合工程软件生态开展集成合作。"
     }
   },
   {
@@ -551,27 +549,26 @@
         "漏洞修复",
         "异常行为"
       ],
-      "summary": "本文介绍AI系统事件的事前准备、响应流程与事后修复最佳实践。"
+      "summary": "本文介绍AI系统事件的事前准备、响应流程与事后修复策略，强调构建完善响应计划的必要性。"
     },
     "impact": {
       "area": [
         "AI安全",
-        "企业AI运维",
-        "可信AI"
+        "企业AI运维"
       ],
       "level": "industry",
-      "description": "为AI行业提供系统性事件管理框架，提升企业级AI系统鲁棒性与可维护性。"
+      "description": "为AI系统规模化落地提供通用安全治理框架，影响全行业AI运维与风险管理实践。"
     },
     "risk_opportunity": {
       "type": "opportunity",
       "category": "technology_opportunity",
-      "description": "AI系统事件响应能力尚处早期建设阶段，存在构建标准化工具链、评估框架和自动化响应平台的技术机会。",
+      "description": "AI系统事件响应机制尚处早期建设阶段，存在标准化工具链、评估框架与最佳实践的空白，为安全厂商与平台服务商提供技术落地机会。",
       "affected_entities": [
-        "AI安全工具开发商",
+        "AI安全厂商",
         "MLOps平台",
-        "企业AI治理团队"
+        "企业AI运维团队"
       ],
-      "suggestion": "加快研发AI专用事件检测、归因与修复工具，嵌入现有MLOps流程。"
+      "suggestion": "开发可集成的AI事件检测、溯源与自动化修复模块，推动AI安全Ops标准化。"
     }
   },
   {
@@ -617,19 +614,19 @@
     "impact": {
       "area": [
         "政策监管",
-        "AI治理"
+        "政府采购"
       ],
       "level": "company",
-      "description": "直接影响Anthropic政府合作范围，反映AI企业面临的政治与监管不确定性。"
+      "description": "直接影响Anthropic政府合作范围，尤其在非国防领域业务连续性。"
     },
     "risk_opportunity": {
       "type": "opportunity",
       "category": "partnership_opportunity",
-      "description": "法院暂缓执行禁令为Anthropic争取窗口期，有望恢复与美国非国防部门（如卫生、教育、司法）的AI合作项目，拓展公共部门落地场景。",
+      "description": "法院暂缓执行合作禁令，为Anthropic与美国联邦非军事部门（如卫生、教育、司法等）建立AI合作提供窗口期，增强其公共部门落地能力。",
       "affected_entities": [
         "Anthropic"
       ],
-      "suggestion": "加速推进符合联邦合规要求的政企合作方案，强化AI治理透明度建设。"
+      "suggestion": "加速对接民用联邦机构需求，构建合规AI政务解决方案。"
     }
   },
   {
@@ -671,7 +668,7 @@
         "AI核能",
         "高管变动"
       ],
-      "summary": "AI核能初创公司Fermi的CEO与CFO突发离职，原因及继任计划未公布。"
+      "summary": "AI核能初创公司Fermi的CEO与CFO突发离职，原因及继任计划未公布，引发投资者高度关注。"
     },
     "impact": {
       "area": [
@@ -679,20 +676,20 @@
         "人工智能"
       ],
       "level": "company",
-      "description": "人事动荡或导致战略执行受阻、融资受挫及客户信任下降。"
+      "description": "人事动荡可能削弱公司治理稳定性、延缓AI核能技术商业化进程，并影响融资与合作信心。"
     },
     "risk_opportunity": {
       "type": "risk",
       "category": "business_risk",
-      "description": "核心管理层集体离职可能暴露公司治理缺陷、战略分歧或财务压力，削弱投资者信心并延缓AI+核能商业化进程。",
+      "description": "核心管理层集体离职构成显著商业风险，可能导致战略执行中断、客户与合作伙伴信任下降、关键人才流失及融资受阻。",
       "affected_entities": [
         "Fermi"
       ],
-      "suggestion": "公司应尽快披露离职原因并任命临时管理层以稳定市场预期。"
+      "suggestion": "公司应尽快公布过渡安排与继任路线图，稳定内外部预期并加强沟通透明度。"
     }
   },
   {
-    "id": "news_001",
+    "id": "news_20260419_palantir_mini_manifesto",
     "title": "Palantir发布迷你宣言：批评包容性和'倒退'文化",
     "content": "Palantir发布了一份迷你宣言，批评企业包容性政策和所谓的'倒退'文化。这一表态反映了科技公司在企业文化和社会议题立场上的分歧。Palantir此举引发了关于科技公司应如何在政治和社会议题上表态的广泛讨论。",
     "source": {
@@ -721,10 +718,10 @@
         "Palantir",
         "企业包容性",
         "企业文化",
-        "科技公司",
+        "科技公司立场",
         "社会议题"
       ],
-      "summary": "Palantir发布宣言批评企业包容性政策，引发科技界对企业社会立场的讨论。"
+      "summary": "Palantir发布迷你宣言批评企业包容性政策，引发科技界对企业社会立场的广泛讨论。"
     },
     "impact": {
       "area": [
@@ -732,16 +729,16 @@
         "科技行业治理"
       ],
       "level": "company",
-      "description": "主要影响Palantir自身雇主品牌与人才策略，并可能波及同行企业ESG沟通方式。"
+      "description": "主要影响Palantir自身雇主品牌与员工关系，并可能波及科技行业价值观讨论。"
     },
     "risk_opportunity": {
       "type": "risk",
-      "category": "regulatory_risk",
-      "description": "公开质疑主流包容性政策可能招致监管审查、员工流失及客户信任下降，尤其在强调多元平等的欧美合规环境中。",
+      "category": "competitive_risk",
+      "description": "该宣言可能加剧人才招聘与留存挑战，削弱Palantir在多元包容导向人才市场的竞争力，并引发客户或合作伙伴对其价值观的质疑。",
       "affected_entities": [
         "Palantir"
       ],
-      "suggestion": "加强内部价值观对齐沟通，平衡原则表达与合规实践。"
+      "suggestion": "加强内部沟通与外部叙事平衡，明确区分政策立场与企业运营承诺。"
     }
   },
   {
@@ -804,7 +801,7 @@
         "云服务商",
         "边缘AI芯片厂商"
       ],
-      "suggestion": "加快代理运行时、能源感知调度及模块化AI服务框架研发。"
+      "suggestion": "加快代理运行时、能源感知调度及模块化AI服务框架研发与生态建设。"
     }
   },
   {
@@ -863,7 +860,7 @@
         "low-code platforms",
         "enterprise IT departments"
       ],
-      "suggestion": "企业可试点Wingman赋能业务人员，构建敏捷开发闭环。"
+      "suggestion": "企业可试点Wingman赋能业务人员，构建敏捷开发协同流程。"
     }
   },
   {

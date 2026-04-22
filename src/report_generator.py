@@ -4,6 +4,7 @@
 """
 
 import json
+import logging
 from typing import Dict, Any, List
 from datetime import datetime
 from pathlib import Path
@@ -14,12 +15,14 @@ from config import (
     STRUCTURED_NEWS_FILE, DAILY_REPORT_FILE, OUTPUT_DIR, PROMPTS_DIR,
     DASHSCOPE_API_KEY, API_BASE_URL, MODEL_NAME, MAX_TOKENS, TEMPERATURE
 )
+from src.error_handler import ErrorHandler, logger
 
 try:
     from openai import OpenAI
     HAS_OPENAI = True
 except ImportError:
     HAS_OPENAI = False
+    logger.warning("⚠️ openai库未安装，将无法使用LLM生成报告")
 
 
 class ReportGenerator:
@@ -31,24 +34,37 @@ class ReportGenerator:
         Args:
             use_llm: 是否使用LLM生成报告（如果False，将使用模板生成）
         """
-        self.use_llm = use_llm and HAS_OPENAI and DASHSCOPE_API_KEY
-        if self.use_llm:
-            self.client = OpenAI(
-                api_key=DASHSCOPE_API_KEY,
-                base_url=API_BASE_URL
-            )
-            self.analysis_prompt = self._load_prompt("analysis_prompt.txt")
+        self.use_llm = False
+        self.client = None
+        self.analysis_prompt = ""
+
+        if use_llm and HAS_OPENAI and DASHSCOPE_API_KEY and DASHSCOPE_API_KEY != 'your_api_key_here':
+            try:
+                self.client = OpenAI(
+                    api_key=DASHSCOPE_API_KEY,
+                    base_url=API_BASE_URL
+                )
+                self.analysis_prompt = self._load_prompt("analysis_prompt.txt")
+                if self.analysis_prompt:
+                    self.use_llm = True
+                    logger.info("✅ LLM报告生成器初始化成功")
+                else:
+                    logger.warning("⚠️ Prompt模板加载失败，将使用模板生成报告")
+            except Exception as e:
+                logger.error(f"❌ LLM客户端初始化失败: {e}")
+        else:
+            logger.info("📋 将使用模板生成报告")
 
     def _load_prompt(self, filename: str) -> str:
         """加载Prompt模板"""
         prompt_path = PROMPTS_DIR / filename
-        with open(prompt_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        return ErrorHandler.safe_load_text(prompt_path, default="")
 
     def load_data(self) -> List[Dict[str, Any]]:
         """加载结构化数据"""
-        with open(STRUCTURED_NEWS_FILE, 'r', encoding='utf-8') as f:
-            news_list = json.load(f)
+        news_list = ErrorHandler.safe_load_json(STRUCTURED_NEWS_FILE, default=[])
+        if not news_list:
+            logger.warning("⚠️ 未找到结构化新闻数据")
         return news_list
 
     def generate_report_with_llm(self, news_list: List[Dict[str, Any]],
@@ -383,34 +399,83 @@ class ReportGenerator:
         """生成报告主函数"""
         print("\n📝 开始生成报告...")
 
-        # 加载数据
-        news_list = self.load_data()
+        try:
+            # 加载数据
+            news_list = self.load_data()
 
-        # 加载分析数据
-        analysis_path = OUTPUT_DIR / 'analysis_report.json'
-        if analysis_path.exists():
-            with open(analysis_path, 'r', encoding='utf-8') as f:
-                analysis_data = json.load(f)
-        else:
-            # 如果没有分析数据，生成基础分析
-            from analyzer import NewsAnalyzer
-            analyzer = NewsAnalyzer(news_list)
-            analysis_data = analyzer.generate_analysis_report()
+            if not news_list:
+                logger.warning("⚠️ 没有新闻数据，生成空报告")
+                return self._generate_empty_report()
 
-        # 生成报告
-        if self.use_llm:
-            report = self.generate_report_with_llm(news_list, analysis_data)
-        else:
-            report = self.generate_report_with_template(news_list, analysis_data)
+            # 加载分析数据
+            analysis_path = OUTPUT_DIR / 'analysis_report.json'
+            analysis_data = ErrorHandler.safe_load_json(analysis_path, default={})
 
-        # 保存报告
-        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        with open(DAILY_REPORT_FILE, 'w', encoding='utf-8') as f:
-            f.write(report)
+            if not analysis_data:
+                # 如果没有分析数据，生成基础分析
+                print("📊 未找到分析数据，正在生成...")
+                from src.analyzer import NewsAnalyzer
+                analyzer = NewsAnalyzer(news_list)
+                analysis_data = analyzer.generate_analysis_report()
 
-        print(f"✅ 报告已生成: {DAILY_REPORT_FILE}")
+            # 生成报告
+            if self.use_llm:
+                report = self.generate_report_with_llm(news_list, analysis_data)
+            else:
+                report = self.generate_report_with_template(news_list, analysis_data)
 
-        return report
+            # 保存报告
+            OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+            with open(DAILY_REPORT_FILE, 'w', encoding='utf-8') as f:
+                f.write(report)
+
+            print(f"✅ 报告已生成: {DAILY_REPORT_FILE}")
+
+            return report
+
+        except Exception as e:
+            logger.error(f"❌ 报告生成失败: {e}")
+            # 生成错误报告
+            error_report = self._generate_error_report(str(e))
+            return error_report
+
+    def _generate_empty_report(self) -> str:
+        """生成空报告"""
+        return """# AI舆情分析日报
+
+## 状态提示
+
+当前没有可用的新闻数据。
+
+请检查以下内容：
+- 确认 `data/raw_news.json` 文件存在且包含有效数据
+- 运行数据处理流程生成结构化数据
+
+---
+*本报告由AI舆情分析系统自动生成*
+"""
+
+    def _generate_error_report(self, error_msg: str) -> str:
+        """生成错误报告"""
+        return f"""# AI舆情分析日报
+
+## ⚠️ 报告生成异常
+
+在生成报告过程中发生错误：
+
+```
+{error_msg}
+```
+
+### 解决建议
+
+1. 检查数据文件是否存在
+2. 检查 API 配置是否正确
+3. 查看详细日志获取更多信息
+
+---
+*本报告由AI舆情分析系统自动生成*
+"""
 
 
 def main():

@@ -5,10 +5,17 @@
 
 import json
 import hashlib
+import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from pathlib import Path
-from openai import OpenAI
+
+try:
+    from openai import OpenAI
+    HAS_OPENAI = True
+except ImportError:
+    HAS_OPENAI = False
+
 from tqdm import tqdm
 
 import sys
@@ -17,6 +24,7 @@ from config import (
     DASHSCOPE_API_KEY, API_BASE_URL, MODEL_NAME, MAX_TOKENS, TEMPERATURE,
     RAW_NEWS_FILE, STRUCTURED_NEWS_FILE, BATCH_SIZE, PROMPTS_DIR
 )
+from src.error_handler import ErrorHandler, FallbackStrategy, DataValidator, retry, logger
 
 
 class DataProcessor:
@@ -24,59 +32,116 @@ class DataProcessor:
 
     def __init__(self):
         """初始化数据处理模块"""
-        if not DASHSCOPE_API_KEY:
-            raise ValueError("请设置DASHSCOPE_API_KEY")
+        self.client = None
+        self.extraction_prompt = ""
+        self._use_fallback = False
 
-        # 使用 OpenAI 兼容接口连接阿里云百炼
-        self.client = OpenAI(
-            api_key=DASHSCOPE_API_KEY,
-            base_url=API_BASE_URL
-        )
+        # 验证API Key
+        if not DASHSCOPE_API_KEY or DASHSCOPE_API_KEY == 'your_api_key_here':
+            logger.warning("⚠️ DASHSCOPE_API_KEY 未设置或无效，将使用降级模式")
+            self._use_fallback = True
+        elif not HAS_OPENAI:
+            logger.warning("⚠️ openai库未安装，将使用降级模式")
+            self._use_fallback = True
+        else:
+            try:
+                self.client = OpenAI(
+                    api_key=DASHSCOPE_API_KEY,
+                    base_url=API_BASE_URL
+                )
+                self._use_fallback = False
+                logger.info("✅ API客户端初始化成功")
+            except Exception as e:
+                logger.error(f"❌ API客户端初始化失败: {e}")
+                self._use_fallback = True
+
+        # 加载Prompt模板
         self.extraction_prompt = self._load_prompt("extraction_prompt.txt")
+        if not self.extraction_prompt:
+            logger.warning("⚠️ Prompt模板加载失败，将使用降级模式")
+            self._use_fallback = True
 
     def _load_prompt(self, filename: str) -> str:
         """加载Prompt模板"""
         prompt_path = PROMPTS_DIR / filename
-        with open(prompt_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        return ErrorHandler.safe_load_text(prompt_path, default="")
 
     def load_raw_news(self, file_path: Optional[Path] = None) -> List[Dict[str, Any]]:
         """加载原始新闻数据"""
         if file_path is None:
             file_path = RAW_NEWS_FILE
 
-        print(f"📂 加载原始数据: {file_path}")
-        with open(file_path, 'r', encoding='utf-8') as f:
-            news_list = json.load(f)
+        logger.info(f"📂 加载原始数据: {file_path}")
 
-        print(f"✅ 成功加载 {len(news_list)} 条新闻")
-        return news_list
+        # 使用错误处理器的安全加载
+        news_list = ErrorHandler.safe_load_json(file_path, default=[])
+
+        if not news_list:
+            logger.warning(f"⚠️ 未找到有效新闻数据，请检查文件: {file_path}")
+            return []
+
+        # 过滤无效新闻
+        valid_news = []
+        for news in news_list:
+            is_valid, error_msg = DataValidator.validate_news(news)
+            if is_valid:
+                valid_news.append(news)
+            else:
+                logger.warning(f"⚠️ 跳过无效新闻: {error_msg}")
+
+        logger.info(f"✅ 成功加载 {len(valid_news)}/{len(news_list)} 条有效新闻")
+        return valid_news
 
     def clean_news(self, news: Dict[str, Any]) -> Dict[str, Any]:
         """清洗单条新闻数据"""
-        cleaned = {}
+        try:
+            cleaned = {}
 
-        # 清洗ID
-        cleaned['id'] = news.get('id', self._generate_id(news))
+            # 清洗ID
+            cleaned['id'] = news.get('id', '') or self._generate_id(news)
 
-        # 清洗标题
-        cleaned['title'] = news.get('title', '').strip()
-        if not cleaned['title']:
-            raise ValueError("新闻标题不能为空")
+            # 清洗标题
+            title = DataValidator.sanitize_string(news.get('title', ''), max_length=500)
+            if not title:
+                title = DataValidator.sanitize_string(
+                    news.get('content', '')[:100] or f"未命名新闻_{cleaned['id']}"
+                )
+                logger.warning(f"⚠️ 新闻标题为空，使用默认标题: {title[:30]}")
+            cleaned['title'] = title
 
-        # 清洗内容
-        cleaned['content'] = news.get('content', '').strip()
-        if not cleaned['content']:
-            cleaned['content'] = cleaned['title']  # 如果没有内容，使用标题
+            # 清洗内容
+            content = DataValidator.sanitize_string(news.get('content', ''))
+            if not content:
+                content = cleaned['title']
+            cleaned['content'] = content[:5000]
 
-        # 清洗来源
-        cleaned['source_name'] = news.get('source_name', 'Unknown').strip()
-        cleaned['source_url'] = news.get('source_url', '').strip()
+            # 清洗来源
+            cleaned['source_name'] = DataValidator.sanitize_string(
+                news.get('source_name') or news.get('source', {}).get('name', 'Unknown'),
+                max_length=200
+            )
+            cleaned['source_url'] = DataValidator.sanitize_string(
+                news.get('source_url') or news.get('source', {}).get('url', ''),
+                max_length=500
+            )
 
-        # 清洗时间
-        cleaned['publish_time'] = self._normalize_time(news.get('publish_time'))
+            # 清洗时间
+            cleaned['publish_time'] = self._normalize_time(
+                news.get('publish_time') or news.get('publishTime')
+            )
 
-        return cleaned
+            return cleaned
+
+        except Exception as e:
+            logger.error(f"❌ 清洗新闻数据失败: {e}")
+            return {
+                'id': news.get('id', f"news_error_{hash(str(news)) % 10000}"),
+                'title': news.get('title', '数据清洗错误'),
+                'content': news.get('content', news.get('title', '')),
+                'source_name': news.get('source_name', 'Unknown'),
+                'source_url': news.get('source_url', ''),
+                'publish_time': datetime.now().isoformat() + 'Z'
+            }
 
     def _generate_id(self, news: Dict[str, Any]) -> str:
         """生成唯一ID"""
@@ -103,16 +168,26 @@ class DataProcessor:
             except ValueError:
                 return datetime.now().isoformat() + 'Z'
 
+    @retry(max_retries=2, delay=1.0, exceptions=(Exception,))
     def extract_structured_data(self, news: Dict[str, Any]) -> Dict[str, Any]:
         """使用LLM提取结构化数据"""
+        # 检查是否需要使用降级模式
+        if self._use_fallback or not self.client:
+            logger.info(f"📋 使用降级模式处理: {news.get('title', 'Unknown')[:30]}...")
+            return FallbackStrategy.get_default_news_structure(news)
+
         # 准备Prompt
-        prompt = self.extraction_prompt.format(
-            title=news['title'],
-            content=news['content'],
-            source_name=news['source_name'],
-            source_url=news['source_url'],
-            publish_time=news['publish_time']
-        )
+        try:
+            prompt = self.extraction_prompt.format(
+                title=news['title'],
+                content=news['content'],
+                source_name=news['source_name'],
+                source_url=news['source_url'],
+                publish_time=news['publish_time']
+            )
+        except KeyError as e:
+            logger.error(f"❌ Prompt模板格式错误: {e}")
+            return FallbackStrategy.get_default_news_structure(news)
 
         try:
             # 调用阿里云百炼 API (OpenAI 兼容格式)
@@ -127,7 +202,12 @@ class DataProcessor:
             )
 
             # 解析响应
+            if not response.choices:
+                raise ValueError("API返回空响应")
+
             response_text = response.choices[0].message.content
+            if not response_text:
+                raise ValueError("API返回空内容")
 
             # 提取JSON部分（处理可能的Markdown代码块）
             json_str = self._extract_json(response_text)
@@ -139,10 +219,12 @@ class DataProcessor:
 
             return structured_data
 
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ JSON解析失败: {e}")
+            return FallbackStrategy.get_default_news_structure(news)
         except Exception as e:
-            print(f"⚠️ 处理新闻 '{news['title'][:30]}...' 时出错: {str(e)}")
-            # 返回基础结构
-            return self._create_fallback_structure(news, str(e))
+            logger.error(f"❌ LLM提取失败: {e}")
+            return FallbackStrategy.get_default_news_structure(news)
 
     def _extract_json(self, text: str) -> str:
         """从文本中提取JSON"""
